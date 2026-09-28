@@ -236,7 +236,7 @@ async def play(ctx: commands.Context):
     conn = sqlite3.connect("blind_secrets.db")
     cursor = conn.cursor()
     
-cursor.execute("SELECT current_page FROM players WHERE user_id = ?", (user_id,))
+    cursor.execute("SELECT current_page FROM players WHERE user_id = ?", (user_id,))
     row = cursor.fetchone()
     conn.close()
 

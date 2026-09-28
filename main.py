@@ -4,6 +4,7 @@ from discord.ext import commands
 import sqlite3
 import datetime
 import time
+import os
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -92,7 +93,34 @@ STORY_PAGES = {
         "*«...How noisy. Or rather... how unusually quiet. Most mortal girls clatter through these halls like frightened cattle, irritating my ears. But you... you move like a corpse. It's almost... peaceful. And what are those steel forks in your hands?»*\n\n"
         "He shifts his head, a single sapphire eye opening to inspect you. He thinks you are boldly studying his face while holding a strange musical tool. "
         "How will you respond to the lazy maestro while keeping your blindness and powers hidden?"
+    ),
+    7: (
+        "**CHAPTER 3: The Aristocratic Toxin (Part 1)** 🧪\n\n"
+        "Leaving the lazy maestro to drift back into his thoughts, you finally reach your designated chamber in the East Wing. "
+        "But as you reach for the doorknob, the air pressure shifts. A crisp, perfectly calculated presence materializes right behind you.\n\n"
+        "It is the second son, **Reiji Sakamaki**. His uniform is immaculate, his glasses catching the candlelight. "
+        "In his hand, he holds an elegant porcelain teacup, from which a thin, fragrant stream of steam rises into the cold air. "
+        "Your acute hearing tracks the micro-vibrations of the rising heat, instantly mapping out the exact coordinates of the cup."
+    ),
+    8: (
+        "**CHAPTER 3: The Aristocratic Toxin (Part 2)** ☕\n\n"
+        "Reiji speaks in a low, strictly measured, polite monotone tone:\n"
+        "*«Welcome to the Sakamaki household. As the one responsible for order here, I have personally brewed this rare, exquisite tea to welcome our new... guest. Won't you share a cup with me?»*\n\n"
+        "Your absolute immunity to chemical toxins and heightened senses notice a distinct, bitter undercurrent in the scent. "
+        "It is a lethal dose of arsenic and cyanide. He is testing your biological limits, entirely convinced you will flinch. "
+        "How does Lybid handle the toxic offering while keeping her blindness completely hidden?"
     )
+}
+
+IMAGES = {
+    1: "https://postimg.cc",
+    2: "https://postimg.cc",
+    3: "https://postimg.cc",
+    4: "https://postimg.cc",
+    5: "https://postimg.cc",
+    6: "https://postimg.cc",
+    7: "https://postimg.cc",
+    8: "https://postimg.cc"
 }
 
 # ==========================================
@@ -112,7 +140,7 @@ class GlobalRestartView(discord.ui.View):
         update_player_page(self.user_id, 1)
         
         embed = discord.Embed(description=STORY_PAGES[1], color=0x4A0E4E)
-        if IMAGES[1] != "":
+        if 1 in IMAGES:
             embed.set_image(url=IMAGES[1])
             
         await interaction.followup.edit_message(message_id=interaction.message.id, embed=embed, view=StoryNavigationView(1, self.user_id))
@@ -135,16 +163,23 @@ class StoryNavigationView(discord.ui.View):
         
         if next_pg in STORY_PAGES:
             embed = discord.Embed(description=STORY_PAGES[next_pg], color=0x4A0E4E)
-            if next_pg in IMAGES and IMAGES[next_pg] != "":
+            if next_pg in IMAGES:
                 embed.set_image(url=IMAGES[next_pg])
-            await interaction.followup.edit_message(message_id=interaction.message.id, embed=embed, view=StoryNavigationView(next_pg, self.user_id))
+            
+            # Визначаємо, яку панель кнопок показувати далі
+            if next_pg == 6:
+                await interaction.followup.edit_message(message_id=interaction.message.id, embed=embed, view=ShuChoiceView(self.user_id))
+            elif next_page == 8:
+                await interaction.followup.edit_message(message_id=interaction.message.id, embed=embed, view=ReijiChoiceView(self.user_id))
+            else:
+                await interaction.followup.edit_message(message_id=interaction.message.id, embed=embed, view=StoryNavigationView(next_pg, self.user_id))
         else:
             embed = discord.Embed(
                 title="CHAPTER 1: The Confrontation 🩸",
                 description="Subaru Sakamaki is blocking your path. He thinks you are staring defiantly at him. How does Lybid handle the white-haired vampire while keeping her blindness hidden? Choose carefully:",
                 color=0x4A0E4E
             )
-            if IMAGES[4] != "":
+            if 4 in IMAGES:
                 embed.set_image(url=IMAGES[4])
             await interaction.followup.edit_message(message_id=interaction.message.id, embed=embed, view=SubaruChoiceView(self.user_id))
 
@@ -163,8 +198,8 @@ class SubaruChoiceView(discord.ui.View):
             f" Press **Next Page ▶** to proceed into the West Wing corridors to meet Shu."
         )
         embed = discord.Embed(description=full_text, color=0x4A0E4E)
-        if IMAGES[4] != "":
-            embed.set_image(url=IMAGES[4])
+        if 5 in IMAGES:
+            embed.set_image(url=IMAGES[5])
         await interaction.response.edit_message(embed=embed, view=StoryNavigationView(4, self.user_id))
 
     @discord.ui.button(label="Maintain Piercing Eye Contact", style=discord.ButtonStyle.secondary, custom_id="sub_c1")
@@ -190,12 +225,13 @@ class ShuChoiceView(discord.ui.View):
             f"**CHAPTER 2: Outcomes of Choice** 🎼\n\n"
             f"{title}\n\n{text}\n\n"
             f"*Shu closes his eyes once more, drifting back into his silent world. Yet, his pulse remains altered. "
-            f"Your blindness and your origin remain perfectly hidden in the dark.*"
+            f"Your blindness and your origin remain perfectly hidden in the dark.*\n\n"
+            f" Press **Next Page ▶** to proceed into the corridors to meet Reiji."
         )
         embed = discord.Embed(description=full_text, color=0x4A0E4E)
-        if IMAGES[6] != "":
-            embed.set_image(url=IMAGES[6])
-        await interaction.response.edit_message(embed=embed, view=GlobalRestartView(self.user_id))
+        if 7 in IMAGES:
+            embed.set_image(url=IMAGES[7])
+        await interaction.response.edit_message(embed=embed, view=StoryNavigationView(6, self.user_id))
 
     @discord.ui.button(label="Play an Enigmatic Note", style=discord.ButtonStyle.primary, custom_id="shu_c1")
     async def c1(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -217,59 +253,78 @@ class ShuChoiceView(discord.ui.View):
     async def c5(self, interaction: discord.Interaction, button: discord.ui.Button):
         await self.process_outcome(interaction, "⛪ **Path of Cold Realism**", "You indifferently hide your steel forks back inside your coat pocket. *«I move like a corpse because I do not fear the dark, nor do I believe in supernatural monsters. You are just a biological entity occupying space.»* Shu slightly clenches his teeth, deeply fascinated.")
 
+class ReijiChoiceView(discord.ui.View):
+    def __init__(self, user_id: int):
+        super().__init__(timeout=None)
+        self.user_id = user_id
+
+    async def process_outcome(self, interaction, title, text):
+        update_player_page(self.user_id, 9) 
+        full_text = (
+            f"**CHAPTER 3: Outcomes of Choice** 🧪\n\n"
+            f"{title}\n\n{text}\n\n"
+            f"*Reiji adjusts his glasses, staring at you in absolute intellectual defeat. "
+            f"Your blindness remains completely undetected, and your immunity has deeply disturbed his cold logic.*\n\n"
+            f" This is the end of the current demo! Press **Restart Story ↩️** to try other choices."
+        )
+        embed = discord.Embed(description=full_text, color=0x4A0E4E)
+        await interaction.response.edit_message(embed=embed, view=GlobalRestartView(self.user_id))
+
+    @discord.ui.button(label="Simulated Vision", style=discord.ButtonStyle.secondary, custom_id="rej_c1")
+    async def c1(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await self.process_outcome(interaction, "👁️ **Path of Simulated Vision**", "Tracking the warm column of rising steam, you reach out with fluid grace. Your fingers flawlessly wrap around the porcelain handle without a single tremor. You raise the cup and drink the lethal dose down in one smooth motion, maintaining a perfectly direct, simulated gaze into Reiji's eyes. He blinks, utterly stunned by your complete lack of hesitation.")
+
+    @discord.ui.button(label="Scientific Toxin Logic", style=discord.ButtonStyle.primary, custom_id="rej_c2")
+    async def c2(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await self.process_outcome(interaction, "🔮 **Path of Scientific Logic**", "You take a calm sip, letting your advanced analytical mind process the chemical notes. *«An interesting blend. Arsenic, cyanide, and a touch of almond extract to mask the bitter undercurrent,»* you state in a flat, clinical voice. *«However, your proportions are slightly sub-optimal. It lacks structural efficiency.»* Reiji chokes on his breath, his eyes widening in total intellectual shock.")
+
+    @discord.ui.button(label="Gymnastic Temperature Critique", style=discord.ButtonStyle.secondary, custom_id="rej_c3")
+    async def c3(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await self.process_outcome(interaction, "🏃‍♀️ **Path of Gymnastic Endurance**", "Utilizing your marathon stamina, you empty the hot, toxic teacup in one continuous gulp as if it were mere spring water. Setting it down, you fix your level face on him: *«The water temperature was exactly 3.4 degrees below optimal brewing standards. If you pride yourself on order, Reiji-san, you shouldn't serve lukewarm water.»* Reiji stands frozen, completely ignoring the fact that you just ignored a lethal dose of poison.")
+
+    @discord.ui.button(label="Cryptic Sad Cipher", style=discord.ButtonStyle.success, custom_id="rej_c4")
+    async def c4(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await self.process_outcome(interaction, "💔 **Path of the Cryptic Cipher (SAD)**", "You look directly through his figure, staring into the dark corridor behind him. *«This tea is remarkably bitter and cold. Much like the endless winter of my origin. To me, this taste only means that I am already starting to feel quite sad.»* You whisper the cipher softly. Reiji subtly tenses up, frantically trying to decode the deep, sorrowful meaning behind Sofia's riddle.")
+
+    @discord.ui.button(label="Atheistic Indifference", style=discord.ButtonStyle.danger, custom_id="rej_c5")
+    async def c5(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await self.process_outcome(interaction, "⛪ **Path of Cold Realism**", "You drink the poisoned tea with a completely deadpan expression, place the empty porcelain cup back onto his saucer, and smoothly step past him into your chamber. *«I do not believe in gothic fairy tales, nor do I fear biological entities playing chemist. Goodnight,»* you murmur flatly, shutting the heavy oak door right in his face. Reiji is left standing alone in the corridor, utterly bewildered.")
+
 # ==========================================
 # 4. ГОЛОВНА КОМАНДА ГРИ (!play) З КАРТИНКАМИ
 # ==========================================
-IMAGES = {
-    1: "https://postimg.cc",   # Картка 1: Брама під дощем
-    2: "https://postimg.cc",   # Картка 2: Сухий головний хол
-    3: "https://postimg.cc",  # Картка 3: Кроки Субару на сходах
-    4: "https://postimg.cc",   # Картка 4: Кулак Субару в стіні
-    5: "https://postimg.cc",      # Картка 5: Шу на дивані
-    6: "https://postimg.cc"       # Картка 6: Сапфірове око Шу
-}
-
 @bot.hybrid_command(name="play", description="Start or continue your year-long visual novel")
 async def play(ctx: commands.Context):
     user_id = ctx.author.id
 
     conn = sqlite3.connect("blind_secrets.db")
     cursor = conn.cursor()
-    
     cursor.execute("SELECT current_page FROM players WHERE user_id = ?", (user_id,))
     row = cursor.fetchone()
     conn.close()
 
-    current_page = row[0] if row else 1
+    current_page = row if row else 1
 
     if current_page in STORY_PAGES:
-        view = StoryNavigationView(current_page, user_id)
         embed = discord.Embed(description=STORY_PAGES[current_page], color=0x4A0E4E)
-        if current_page in IMAGES and IMAGES[current_page] != "":
+        if current_page in IMAGES:
             embed.set_image(url=IMAGES[current_page])
-        await ctx.send(embed=embed, view=view)
-    else:
-        if current_page == 5:
-            embed = discord.Embed(
-                title="CHAPTER 1: The Confrontation 🩸",
-                description="Subaru Sakamaki is blocking your path. He thinks you are staring defiantly at him. How will Lybid handle the white-haired vampire while keeping her blindness hidden?",
-                color=0x4A0E4E
-            )
-            if IMAGES.get(4) != "":
-                embed.set_image(url=IMAGES.get(4))
-            await ctx.send(embed=embed, view=SubaruChoiceView(user_id))
-        elif current_page == 7:
-            embed = discord.Embed(
-                title="CHAPTER 2: Whispers in the Dark 🤫",
-                description="The lazy maestro opens a single sapphire eye, inspecting your doll-like face. How will you respond to Shu Sakamaki while keeping your secrets completely hidden?",
-                color=0x4A0E4E
-            )
-            if IMAGES.get(6) != "":
-                embed.set_image(url=IMAGES.get(6))
+            
+        if current_page == 6:
             await ctx.send(embed=embed, view=ShuChoiceView(user_id))
+        elif current_page == 8:
+            await ctx.send(embed=embed, view=ReijiChoiceView(user_id))
         else:
-            embed = discord.Embed(description="Your current stance is sealed in the shadows. Rest well in your chamber.", color=0x2b2d31)
-            await ctx.send(embed=embed)
+            await ctx.send(embed=embed, view=StoryNavigationView(current_page, user_id))
+    else:
+        embed = discord.Embed(
+            title="CHAPTER 1: The Confrontation 🩸",
+            description="Subaru Sakamaki is blocking your path. He thinks you are staring defiantly at him. How will Lybid handle the white-haired vampire while keeping her blindness hidden?",
+            color=0x4A0E4E
+        )
+        if 4 in IMAGES:
+            embed.set_image(url=IMAGES)
+        await ctx.send(embed=embed, view=SubaruChoiceView(user_id))
 
 @bot.event
 async def on_ready():
@@ -292,3 +347,4 @@ while True:
     except Exception as e:
         print(f"⚠️ Тимчасовий збій мережі: {e}. Перезапуск через 5 секунд...")
         time.sleep(5)
+

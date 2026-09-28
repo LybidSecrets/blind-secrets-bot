@@ -113,15 +113,16 @@ STORY_PAGES = {
 }
 
 IMAGES = {
-    1: "https://postimg.cc",
-    2: "https://postimg.cc",
-    3: "https://postimg.cc",
-    4: "https://postimg.cc",
-    5: "https://postimg.cc",
-    6: "https://postimg.cc",
-    7: "https://postimg.cc",
-    8: "https://postimg.cc"
+    1: "https://nocookie.net",  # Брама під дощем
+    2: "https://nocookie.net",              # Головний холл
+    3: "https://nocookie.net",           # Розлючений Субару
+    4: "https://nocookie.net",            # Кулак у стіні
+    5: "https://nocookie.net",               # Шу на дивані
+    6: "https://nocookie.net",                 # Сапфірове око Шу
+    7: "https://nocookie.net",            # Рейджі в холі
+    8: "https://nocookie.net"                 # Рейджі з чашкою
 }
+
 
 # ==========================================
 # 3. ІНТЕРФЕЙСИ ТА КНОПКИ У ГРІ

@@ -283,7 +283,8 @@ async def on_ready():
 # ==========================================
 # 5. НАДІЙНИЙ ЗАПУСК БОТА З АВТО-ПЕРЕЗАПУСКОМ
 # ==========================================
-TOKEN = "MTU1MzM2MjAwNjUzNzY3NDgzMg.GpIVof.o3CxBTrm5UKWVIjybeU9ZYpt1-CO0_0JTiJCjs"
+import os
+TOKEN = os.getenv("DISCORD_TOKEN")
 
 while True:
     try:

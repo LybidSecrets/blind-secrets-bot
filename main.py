@@ -283,7 +283,7 @@ async def on_ready():
 # ==========================================
 # 5. НАДІЙНИЙ ЗАПУСК БОТА З АВТО-ПЕРЕЗАПУСКОМ
 # ==========================================
-TOKEN = "MTU1MzM2MjAwNjUzNzY3NDgzMg.G457uL.OhY1ZQMZVDg1YbYYMLnjlDHDMYJqe2NqwbW-6k"
+TOKEN = "MTU1MzM2MjAwNjUzNzY3NDgzMg.GpIVof.o3CxBTrm5UKWVIjybeU9ZYpt1-CO0_0JTiJCjs"
 
 while True:
     try:
